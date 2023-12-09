@@ -46,15 +46,13 @@ function ExposureTypes() {
     <body>
 <table width="50%"><tr>
           <td>
-          <h3>Exposure Types</h3>
+          <h3 style={{color:'#944780'}}>Exposure Types</h3>
+
           </td>
-          <td>
-            |
-          </td>
-          <td>Add New</td>
+
           <td><Link
-  to={"/exposuretype"}>
-    <AddIcon/>
+  to={"/exposuretype"} state={{id: 0}}>  
+    <AddIcon/>Add New
 </Link></td>
 </tr>
 </table>

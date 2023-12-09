@@ -24,7 +24,6 @@ function Reports({SeriesID}) {
   const token = await bearerToken()
   const headers = new Headers()
   const bearer = `Bearer ${token}`
-
   headers.append('Authorization', bearer)
 
   const options = {
@@ -41,25 +40,29 @@ function Reports({SeriesID}) {
   console.log(json);
   setDataReport(json);
   setLoading(false);
-
-
-
-    
   }
-    
+  
+  const OpenReportMatrix = () => {
+    //const val=e.target.name;
+    //console.writeline(SeriesID);
+    window.open('https://allungardlc.azurewebsites.net/MatrixMulti.aspx?SeriesID='+SeriesID);
+  }
+
       return (
         <body>
 
 {loading ? 
-     <Circles
-     height="300"
-     width="300"
-     color="#944780"
-     ariaLabel="circles-loading"
-     wrapperStyle={{}}
-     wrapperClass=""
-     visible={true}
-   />
+    <div class="container">
+    <Circles
+    height="200"
+    width="200"
+    color="silver"
+    ariaLabel="circles-loading"
+    wrapperStyle={{}}
+    wrapperClass=""
+    visible={true}
+  />
+  </div>
 :
       <table id="table1">
         <tr>
@@ -91,12 +94,15 @@ function Reports({SeriesID}) {
           })
         }
         <tr>
-          <td>
+      
           <td><Link
   to={"/report"}>
     <AddIcon/>Add New
 </Link></td>
+<td><a href={'https://allungardlc.azurewebsites.net/MatrixMulti.aspx?SeriesID='+SeriesID} target="new">Report/Print</a>
+              
           </td>
+          
         </tr>
     </table>
 }

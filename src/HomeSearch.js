@@ -7,7 +7,7 @@ import { bearerToken } from './index'
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import moment from 'moment';
-import { useIsRTL } from 'react-bootstrap/esm/ThemeProvider';
+//import { useIsRTL } from 'react-bootstrap/esm/ThemeProvider';
 import Button from '@mui/material/Button';
 import { confirmAlert } from 'react-confirm-alert'; // Import
 import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
@@ -258,16 +258,17 @@ const colourstyle = (active, complete,dteNextRpt,dteNextRtrn,CntSamplesOnSite,lo
         <br/>
         </form>
         {loading ? 
-     
+     <div class="container">
      <Circles
-     height="300"
-     width="300"
-     color="#944780"
+     height="200"
+     width="200"
+     color="silver"
      ariaLabel="circles-loading"
      wrapperStyle={{}}
      wrapperClass=""
      visible={true}
    />
+   </div>
 :
      
       <table style={{width:"100%"}} id="table2">
@@ -307,7 +308,7 @@ const colourstyle = (active, complete,dteNextRpt,dteNextRtrn,CntSamplesOnSite,lo
         {
           results.map((result,i)=>{
             return (
-              <tr key={i} className={colourstyle(result.Active,result.Complete,result.DateNextReport,result.DateNextReturn,result.CntSamplesOnSite,result.Locked)} >
+              <tr key={i} className={colourstyle(result.Active,result.Complete,result.DateNextReport,result.DateNextReturn,result.CntSamplesOnSite)} >
                 <td align='center'><div style={{border:'none'}} onClick={() => onDelete(result.seriesid)}><DeleteIcon/></div></td>
                 <td align='center'><input type='checkbox' checked={result.Complete}/></td>
                 <td>{result.companyname}</td>

@@ -209,17 +209,20 @@ export const Sample  = ({  closePopup, sampleid,SeriesID }) => {
         <TabPanel  value="1">
       <body>
         {loading ? 
-     <Circles
-     height="300"
-     width="300"
-     color="purple"
-     ariaLabel="circles-loading"
-     wrapperStyle={{}}
-     wrapperClass=""
-     visible={true}
-   />
+    <div class="container">
+    <Circles
+    height="200"
+    width="200"
+    color="silver"
+    ariaLabel="circles-loading"
+    wrapperStyle={{}}
+    wrapperClass=""
+    visible={true}
+  />
+  </div>
 :
-      <table border="1">
+<div>
+      <table>
         <tr>
           <th>ID:</th>
           <td>
@@ -283,18 +286,13 @@ export const Sample  = ({  closePopup, sampleid,SeriesID }) => {
           <input type="text" name="SampleOrder" onChange={handleChange} value={data.SampleOrder} />
           </td>
         </tr>
-<tr><td>
- <Button type="submit" variant="outlined"  class="button" onClick={handleSubmit}>
-          Submit
-        </Button>
-        </td>
-   
-      
 
-        </tr>
   </table>
 
- 
+  <Button type="submit" variant="outlined" onClick={handleSubmit}>
+          Submit
+        </Button>
+ </div>
     
      
 

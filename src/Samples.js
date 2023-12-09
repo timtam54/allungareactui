@@ -17,11 +17,10 @@ function Samples({SeriesID}) {
   const [isOpenSample, setIsOpenSample] = useState(false);
   const [loading,setLoading] = useState(true);
   const [deleted,setDeleted] = useState(false);
+  const [SampleID,setSampleID]=useState(0);
 const [status,setStatus]=useState("Active Samples");
   useEffect(() => {
-
     fetchSample();
-
   }, []);
   
   const [dataSample, setDataSample] = useState([]);
@@ -51,6 +50,11 @@ const fetchSample = async e=>{
   setLoading(false);
 
 
+  }
+
+  function setSampleOpen(SampleID)
+  { setIsOpenSample(true);
+    setSampleID(SampleID);
   }
 
 function getcolour(del)
@@ -83,15 +87,17 @@ const setDeletedfn= async e=>{
 
 {loading ? 
      
+     <div class="container">
      <Circles
-     height="300"
-     width="300"
-     color="purple"
+     height="200"
+     width="200"
+     color="silver"
      ariaLabel="circles-loading"
      wrapperStyle={{}}
      wrapperClass=""
      visible={true}
    />
+   </div>
 :
   <table className="results" id="table1" style={{backgroundColor:getcolour(deleted)}}>
     <tr>
@@ -106,14 +112,14 @@ const setDeletedfn= async e=>{
   <Button variant="outlined" onClick={() => setIsOpenSample(true)}>
   <AddIcon/>
       </Button>
+    
+
       <ReactModal
         isOpen={isOpenSample}
         contentLabel="Sample Detail"
         onRequestClose={() => setIsOpenSample(false)} >
-       <Sample closePopup={() => setIsOpenSample(false)}  sampleid="0" SeriesID={SeriesID} />
-      </ReactModal>
-
-  
+       <Sample closePopup={() => setIsOpenSample(false)}  sampleid={SampleID} SeriesID={SeriesID} />
+      </ReactModal> 
 
 </th>
     <th><b>AEL Ref</b></th>
@@ -138,15 +144,10 @@ const setDeletedfn= async e=>{
           <td>
 
 
-          <Button variant="outlined" onClick={() => setIsOpenSample(true)}>
+          <Button variant="outlined" onClick={() => setSampleOpen(result.SampleID)}>
           {result.description}
       </Button>
-      <ReactModal
-        isOpen={isOpenSample}
-        contentLabel="Sample Detail"
-        onRequestClose={() => setIsOpenSample(false)} >
-       <Sample closePopup={() => setIsOpenSample(false)}  sampleid={result.SampleID} SeriesID={SeriesID} />
-      </ReactModal>
+      
          </td>
          <td>
     {result.longdescription}

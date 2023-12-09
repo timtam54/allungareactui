@@ -3,6 +3,9 @@ import React, { useState, useEffect, Component } from "react";
 import {Link,useLocation, useParams } from "react-router-dom"
 import { Circles } from 'react-loader-spinner'
 import { bearerToken } from './index'
+import { TextareaAutosize } from "@mui/material";
+import Button from '@mui/material/Button';
+
 function ExposureType() {
   const [loading,setLoading] = useState(true);
   //const [exposuretypeid,setExposuretypeid] = useState(0);
@@ -11,6 +14,7 @@ function ExposureType() {
   const exposuretypeid = location.state.id;
 
   const handleChange = (e) => {
+  let ree=data;
     setData({ ...data, [e.target.name]: e.target.value });
  }
 
@@ -49,40 +53,59 @@ function ExposureType() {
     fetchInfo();
   
   }, []);
-//doau-kxei-vdby-ldsk
-return (
-  <body>
-    {loading ? 
- <Circles
- height="300"
- width="300"
- color="purple"
- ariaLabel="circles-loading"
- wrapperStyle={{}}
- wrapperClass=""
- visible={true}
-/>
-:
-  <table border="1">
-    <tr>
-      <th>ID:</th>
-      <td>
-      <input type="text" name="ExposureTypeID" onChange={handleChange} value={data.ExposureTypeID} />
-      </td>
-    </tr>
-    <tr>
-      <th>Name:</th>
-      <td>
-      <input type="text" name="Name" onChange={handleChange} value={data.Name} />
-      </td>
-    </tr>
-    <tr>
-      <th>Description:</th>
-      <td>
-      <input type="text" name="Description" onChange={handleChange} value={data.Description} />
-      </td>
-    </tr>
-    <tr>
+
+
+
+  
+ const handleSubmit = async (e) => {
+
+    e.preventDefault();
+   
+ setLoading(true);
+   const token = await bearerToken()
+  const headers = new Headers()
+  const bearer = `Bearer ${token}`
+  headers.append('Authorization', bearer)
+  headers.append('Content-type', "application/json; charset=UTF-8")
+  if (exposuretypeid==0)
+  {
+    const options = {
+      method: 'POST',
+      body: JSON.stringify(data),
+      headers: headers,
+    }  
+    const response = fetch(`https://allungawebapi.azurewebsites.net/api/ExposureTypes/`+exposuretypeid,options);
+   var ee=await response;
+    if (!ee.ok)
+    {
+      throw Error((ee).statusText);
+    }
+    const json=await ee.json();
+    console.log(json);
+    //setSeriesID(json.SeriesID);
+    await setData(json);
+    
+  }
+  else
+  {
+  const options = {
+    method: 'PUT',
+    body: JSON.stringify(data),
+    headers: headers,
+  }  
+
+  const response = fetch(`https://allungawebapi.azurewebsites.net/api/ExposureTypes/`+exposuretypeid,options);
+ var ee=await response;
+  if (!ee.ok)
+  {
+    throw Error((ee).statusText);
+  }
+
+  }
+  setLoading(false);
+  }
+/*
+<tr>
       <th>DateCreated:</th>
       <td>
       <input type="text" name="DateCreated" onChange={handleChange} value={data.DateCreated} />
@@ -112,6 +135,42 @@ return (
       <input type="text" name="OnSiteRateDiscount" onChange={handleChange} value={data.OnSiteRateDiscount} />
       </td>
     </tr>
+    */
+return (
+  <body>
+    {loading ? 
+ <Circles
+ height="300"
+ width="300"
+ color="purple"
+ ariaLabel="circles-loading"
+ wrapperStyle={{}}
+ wrapperClass=""
+ visible={true}
+/>
+:
+  <table border="1">
+    <tr>
+      <th>ID:</th>
+      <td>
+     {data.ExposureTypeID}
+      </td>
+    </tr>
+    <tr>
+      <th>Name:</th>
+      <td>
+      <input type="text" name="Name" onChange={handleChange} value={data.Name} />
+      </td>
+    </tr>
+    <tr>
+      <th>Description:</th>
+    </tr>
+    <tr>  
+    <td colSpan={2} width="100%">
+        <textarea cols={120}  style={{width:'100%'}} name="Description" onChange={handleChange} value={data.Description} />
+      </td>
+    </tr>
+    
     <tr>
       <th>SortOrder:</th>
       <td>
@@ -123,7 +182,10 @@ return (
     }
 <table>
         <tr>
-<td colSpan="2"><Link to="/exposuretypes">back</Link></td>
+<td><Link to="/exposuretypes">back</Link></td>
+<td> <Button variant="outlined" onClick={handleSubmit}>
+          Submit
+        </Button></td>
 </tr>
       </table>
  </body>

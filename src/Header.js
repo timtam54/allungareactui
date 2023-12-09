@@ -17,9 +17,7 @@ import GroupsIcon from '@mui/icons-material/Groups';
 import CalculateIcon from '@mui/icons-material/Calculate';
 import {Link} from "react-router-dom"
 import { DropdownDivider, DropdownItem } from 'react-bootstrap';
-//import HomeSearch from './HomeSearch';
-//import About from './About';
-//import Users from './Users';
+import { bearerToken } from './index'
 
 
 function Header() {
@@ -29,6 +27,55 @@ function Header() {
     alert('logout');
     instance.logout();
   }
+
+
+  async function getIP(){
+    const response2 = await fetch('https://api.ipify.org/?format=json');
+    const data = await response2.json();
+
+    let ip = data.ip;
+   // alert(ip);
+    const token = await bearerToken()
+    const headers = new Headers()
+    const bearer = `Bearer ${token}`
+    headers.append('Authorization', bearer)
+    const options = {
+      method: 'GET',
+      headers: headers,
+    }
+    const endPoint = `https://allungawebapi.azurewebsites.net/api/ips/`+ip;
+    const response = fetch(endPoint,options);
+    var ee=await response;
+    if (!ee.ok)
+
+/*    const token = await bearerToken()
+    const headers = new Headers()
+    const bearer = `Bearer ${token}`
+    headers.append('Authorization', bearer)
+    headers.append('Content-type', "application/json; charset=UTF-8")
+
+      const options = {
+        method: 'POST',
+        body: JSON.stringify(ip),
+        headers: headers,
+      }  
+      const response = fetch(`https://localhost:7147/api/ip`,options);
+     var ee=await response;
+      if (!ee.ok)*/
+      {
+        throw Error((ee).statusText);
+      }
+      const json=await ee.json();
+      console.log(json);
+      //setSeriesID(json.SeriesID);
+      //await setData(json);
+      
+    
+}
+
+useEffect( () => {
+    getIP().then(data => console.log(data))
+},[])
 
   /*
   <Divider></Divider>
@@ -135,7 +182,9 @@ function Header() {
           <Divider></Divider> 
           <Dropdown.Item  as={Link} to="/seriesprojectedwork"><ImportContactsIcon/>Series Projected Work</Dropdown.Item>
           <Divider></Divider> 
-          <Dropdown.Item  as={Link} to="/Rprt">Excel</Dropdown.Item>
+
+          <Dropdown.Item  as={Link} target='new'  to="https://allungardlc.azurewebsites.net/RackRpt.aspx"><ImportContactsIcon/>Rack Report</Dropdown.Item>
+        
       
       </Dropdown.Menu>
     </Dropdown>

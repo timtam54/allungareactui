@@ -1,19 +1,22 @@
-import * as React from "react";
+
 import { ReactGrid, Column, Row, CellChange, TextCell, Cell, DefaultCellTypes } from "@silevis/reactgrid";
 import "@silevis/reactgrid/styles.css";
 import { bearerToken } from './index';
+import { Circles } from 'react-loader-spinner'
+import {Link,useLocation, useParams } from "react-router-dom"
 
-
-
+import React,{ useState, useEffect} from 'react';
 
 interface Param {
     ParamID:number;
     ParamName:string;
 }
 
-
 function Rprt() {
-  const [reportid]=React.useState(2923);
+  const [loading, setLoading] = useState(true);
+  const location = useLocation()
+  const id = location.state.id;
+  const [reportid]=React.useState(id);
     const [columns, setColumns] = React.useState<Column[]>([]);
 
     const [datacol, setDatacol] = React.useState<Param[]>([]);
@@ -26,6 +29,7 @@ const [dataSample, setDataSample] = React.useState([]);
       }, []);
 
       const fill = async () => {
+        setLoading(true);
         const urlParam = `https://allungawebapi.azurewebsites.net/api/Params/int/` + reportid;
         const token = await bearerToken()
         const headers = new Headers()
@@ -43,9 +47,8 @@ const [dataSample, setDataSample] = React.useState([]);
         const json = await ee.json();
         console.log(json);
         setDatacol(json);
-
         const urlReading = `https://allungawebapi.azurewebsites.net/api/Readings/` + reportid;
-/////////////////
+
         
     const optionsReadings = {
       method: 'GET',
@@ -57,11 +60,7 @@ const [dataSample, setDataSample] = React.useState([]);
       throw Error((ee).statusText);
     }
     const jsonReadings = await ee.json();
-
     setDataReading(jsonReadings);
-
-
-
     //////////////
     const urlSample = `https://allungawebapi.azurewebsites.net/api/Samples/report/` + reportid;
 
@@ -99,14 +98,13 @@ const [dataSample, setDataSample] = React.useState([]);
         
         var ii=1;
         let Samp =[1,2];
-        //Samp.forEach(elementSample => {
+
         jsonSample.forEach(elementSample => {
           var jj=0;
           const bodys: DefaultCellTypes[]=[];// Cell[]=[];
          
           bodys.push({ type: "text", text: elementSample.Number.toString() });
           bodys.push({ type: "text", text: elementSample.description.toString() });
-        //  bodys.push({ type: "text", text: elementSample.Description});
         json.forEach(element => {//datacol
           var xx = jsonReadings.filter((i) => i.Paramid === element.ParamID && i.sampleid === elementSample.SampleID);
           if (xx.length > 0) {
@@ -125,24 +123,82 @@ const [dataSample, setDataSample] = React.useState([]);
         rows.push(bodyRow);
         ii++;
       });
-        
-
         setColumns(cols);
-
+        setLoading(false);
       }
-    // const getColumns = async (): Promise<Column[]> => {
+//
+      const handleChanges = (changes: CellChange<TextCell>[]) => { 
+    
+        setRows((prevPeople) => applyChangesToPeople(changes, prevPeople)); 
+      }; 
+
+      const applyChangesToPeople = (
+        changes: CellChange<TextCell>[],
+        prevPeople: Row[]
+      ): Row[] => {
+        changes.forEach((change) => {
+          const personIndex = change.rowId;
+          const fieldName = change.columnId;
+          var colord = getcolordinal(fieldName.toString());
+          var roword = getcolordinal(personIndex.toString());
+          var xx = prevPeople.filter((i) => i.rowId === personIndex);
+          var x=xx[colord];
+          if ((typeof prevPeople[colord][roword])=='number')
+          {
+          prevPeople[personIndex][fieldName] = +change.newCell.text.replace(',','');
+          }
+          else
+          {
+            prevPeople[personIndex][fieldName] = change.newCell.text;
+          }
+        });
+        return [...prevPeople];
+      };
+
+      const getcolordinal = (ParamID:string):number=>
+      {
+        //datacol.filter((i) => i.ParamID === fieldName);
+        return 2;
+      }
+/*
+      const applyChangesToPeople = (
+        changes: CellChange<TextCell>[],
+        prevPeople: Person[]
+      ): Person[] => {
+        changes.forEach((change) => {
+          const personIndex = change.rowId;
+          const fieldName = change.columnId;
+         // alert(typeof prevPeople[personIndex][fieldName]);
+          if ((typeof prevPeople[personIndex][fieldName])=='number')
+          {
+          prevPeople[personIndex][fieldName] = +change.newCell.text.replace(',','');
+          }
+          else
+          {
+            prevPeople[personIndex][fieldName] = change.newCell.text;
+          }
+        });
+        return [...prevPeople];
+      };*/
+
       const [dataReading, setDataReading] = React.useState([]);
         
-     // const GetReading = (ParamID, SampleID) => {
-      //  var xx = dataReading.filter((i) => i.Paramid === ParamID && i.sampleid === SampleID);
-     //   if (xx.length > 0) {
-    //      return xx[0].value;// '2';
-    //    }
-    //    return '';
-    //  }
-      
- return <ReactGrid   enableRowSelection enableFillHandle enableRangeSelection  enableColumnSelection rows={rows} columns={columns} stickyTopRows={1} />
 
+    const handleColumnResize = (ci: Id, width: number) => {
+      setColumns((prevColumns) => {
+          const columnIndex = prevColumns.findIndex(el => el.columnId === ci);
+          const resizedColumn = prevColumns[columnIndex];
+          const updatedColumn = { ...resizedColumn, width };
+          prevColumns[columnIndex] = updatedColumn;
+          return [...prevColumns];
+      });
+    }
+ return <div><h3 style={{color:'#944780'}}>Excel View</h3>  {loading ? 
+  <Circles   height="300"   width="300"   color="#944780"   ariaLabel="circles-loading" wrapperStyle={{}}  wrapperClass="" visible={true} />
+:<ReactGrid onCellsChanged={handleChanges}  onColumnResized={handleColumnResize} enableRowSelection enableFillHandle enableRangeSelection  enableColumnSelection rows={rows} columns={columns} stickyTopRows={1} />
+ }
+</div>
+ 
 }
 
 

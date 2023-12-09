@@ -160,10 +160,17 @@ if (data.ReturnsFrequencyVal=='') {
     fetchSeries();
   }
 
-  const url = `https://allungawebapi.azurewebsites.net/api/Series/int/`+SeriesID;
+  //const url = `https://allungawebapi.azurewebsites.net/api/Series/int/`+SeriesID;
   const [data, setData] = useState([]);
  
   const fetchSeries = async e=>{
+//todotim set serieslock
+//remove all series locks on close
+  /*  Sub SetLock()
+    Dim sql As String = "update Series set Lock_ComputerName='" & System.Net.Dns.GetHostName() & "', Lock_DateTime='" & DateTime.Now.ToString("yyyy/MM/dd H:mm") & "' where seriesid=" & SeriesID.ToString()
+    AllungaData.globals.ExecuteScalar(sql)
+End Sub
+*/
     if (SeriesID!=0)
     {
     const token = await bearerToken()
@@ -184,6 +191,10 @@ if (data.ReturnsFrequencyVal=='') {
     const json=await ee.json();
     console.log(json);
     await setData(json);
+    if (json.Lock_ComputerName!='' && json.Lock_ComputerName!=null)
+    {
+      alert('locked by '+json.Lock_ComputerName);
+    }
     var xx=moment(json.DateIn).toDate();
     setDateIn(xx);
     if (json.ExposureEnd!=null)
@@ -230,18 +241,7 @@ if (data.ReturnsFrequencyVal=='') {
   useEffect(() => {
     setLoading(true);
     fetchExp();
-   /* if (!hasChanged) return;
-  
-    function handleOnBeforeUnload(event:BeforeUnloadEvent)
-    {
-        event.preventDefault();
-        return (event.returnValue='');
-    }
-    window.addEventListener('beforeunload',handleOnBeforeUnload,{capture:true});
-    return () =>{
-       window.removeEventListener('beforeunload',handleOnBeforeUnload,{capture:true});
-    }*/
-  
+
 } , []);///*,[hasChanged]*/
 
 
@@ -335,19 +335,13 @@ const handleChangeSeriesEvent= (e) => {
 
 
  const handleSubmit = async (e) => {
- // 
   if (!validatePage())
       return;
     e.preventDefault();
-   
     const dtfrmt="YYYY-MM-DDT00:00:00";
   data.DateIn = moment(DateIn).format(dtfrmt);
-   //setData({ ...data, 'DateIn': moment(DateIn).format(dtfrmt)});
   data.ExposureEnd =  moment(ExposureEnd).format(dtfrmt);
- //setData({ ...data, 'ExposureEnd': moment(ExposureEnd).format(dtfrmt)});
-
    data.LogBookLetterDate =  moment(LogBookLetterDate).format(dtfrmt);
- //setData({ ...data, 'LogBookLetterDate': moment(LogBookLetterDate).format(dtfrmt)});
  setLoading(true);
    const token = await bearerToken()
   const headers = new Headers()
@@ -361,7 +355,6 @@ const handleChangeSeriesEvent= (e) => {
       body: JSON.stringify(data),
       headers: headers,
     }  
-  
     const response = fetch(`https://allungawebapi.azurewebsites.net/api/Series`,options);
    var ee=await response;
     if (!ee.ok)
@@ -444,23 +437,25 @@ handleSubmitSeriesEvent();
   setLoading(false);
      alert('saved');
    }
+
+   const openInNewTab = (url) => {
+    window.open(url, "_blank", "noreferrer");
+  };
+
     return (
       <body>
-
-
-
-
-
         {loading ? 
-     <Circles
-     height="300"
-     width="300"
-     color="#944780"
-     ariaLabel="circles-loading"
-     wrapperStyle={{}}
-     wrapperClass=""
-     visible={true}
-   />
+      <div class="container">
+      <Circles
+      height="200"
+      width="200"
+      color="silver"
+      ariaLabel="circles-loading"
+      wrapperStyle={{}}
+      wrapperClass=""
+      visible={true}
+    />
+    </div>
 :
 <form onChange={handleOnChange}>
       <table>
@@ -495,9 +490,11 @@ handleSubmitSeriesEvent();
          
             <td>
             <div>
-            <Button variant="outlined"  onClick={() => setIsOpen(true)}>
-            Exp conf rpt
-      </Button>
+           
+     
+      <a href={'https://allungardlc.azurewebsites.net/ExposureConfirmation.aspx?SeriesID='+SeriesID} target="new">    
+      <Button variant="outlined">Exposure Confirmation  Report</Button>
+      </a>
       <ReactModal
         isOpen={isOpen}
         contentLabel="Example Modal"

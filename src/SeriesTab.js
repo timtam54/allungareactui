@@ -19,14 +19,14 @@ export default function SeriesTab() {
   const location = useLocation()
   const seriesid = location.state.id;//.id
   const seriesname = location.state.name;
+
   const [dataParRepSeries, setDataParRepSeries] = useState([]);
   const [value, setValue] = React.useState('1');
   const reportid=1;
- // const [open, setOpen] = useState(false);
   
 const handleSubmitParam = async e=>{
   e.preventDefault()
-  //var ret=dataParRepSeries.filter(x=>x.selected==true);
+
 
   const token = await bearerToken()
   const headers = new Headers()
@@ -158,7 +158,7 @@ return false;
   }
 
 useEffect(() => {
-  
+
   fetchParRepSeries();
   fetchParams();
   fetchReport();
